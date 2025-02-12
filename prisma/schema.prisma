@@ -15,7 +15,7 @@ datasource db {
 
 model Question {
   id              String   @id @db.ObjectId @default(auto()) @map("_id") 
-  questionId      String   @unique
+  questionId      Int   @unique
   questionText    String
   questionContent String
   category        String
@@ -30,7 +30,7 @@ model Answer {
   answerText String
   createdAt DateTime @default(now())
 
-  questionId String
+  questionId Int
   question   Question @relation("QuestionToAnswer", fields: [questionId], references: [questionId])
 }
 
