@@ -1,31 +1,32 @@
+import { NextResponse } from 'next/server';
+import { AppException } from '@/exception/AppException';
+import { ZodError } from 'zod';
+import { ApiResponse } from '@/common/ApiResponse';
 import { ERROR_CODES } from './ErrorCode';
 
-export class AppError extends Error {
-  public statusCode: number;
-  public code: string;
-
-  constructor(code: string) {
-    super(ERROR_CODES[code]?.description || 'Unknown error');
-    this.code = code;
-    this.statusCode = ERROR_CODES[code]?.statusCode || 500;
-  }
-}
-
 export function handleError(error: any) {
-  if (error instanceof AppError) {
-    return {
-      statusCode: error.statusCode,
-      error: {
-        code: error.code,
-        message: error.message,
-      },
-    };
+  if (error instanceof AppException) {
+    return NextResponse.json(
+      ApiResponse.error(error.errorDetail.code, error.errorDetail.message),
+      { status: error.errorDetail.statusCode }
+    );
   }
-  return {
-    statusCode: 500,
-    error: {
-      code: ERROR_CODES.INTERNAL_SERVER_ERROR.code,
-      message: ERROR_CODES.INTERNAL_SERVER_ERROR.description,
-    },
-  };
+
+  if (error instanceof ZodError) {
+    return NextResponse.json(
+      ApiResponse.error(
+        ERROR_CODES.VALIDATION_ERROR.code,
+        ERROR_CODES.VALIDATION_ERROR.message
+      ),
+      { status: 400 }
+    );
+  }
+
+  return NextResponse.json(
+    ApiResponse.error(
+      ERROR_CODES.INTERNAL_SERVER_ERROR.code,
+      ERROR_CODES.INTERNAL_SERVER_ERROR.message
+    ),
+    { status: 500 }
+  );
 }
