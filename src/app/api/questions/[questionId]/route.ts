@@ -6,12 +6,13 @@ import { NextResponse } from 'next/server';
 
 const questionService = new QuestionService(new QuestionRepository());
 
-export async function GET(
-  req: Request,
-  { params }: { params: { questionId: string } }
-) {
+type Params = Promise<{ questionId: string }>;
+
+export async function GET(req: Request, { params }: { params: Params }) {
   try {
-    const questionId = parseInt(params.questionId, 10);
+    const raw = await params;
+
+    const questionId = parseInt(raw.questionId, 10);
 
     const question = await questionService.getQuestionById(questionId);
 
