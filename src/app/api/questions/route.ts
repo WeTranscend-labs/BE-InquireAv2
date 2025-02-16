@@ -22,3 +22,19 @@ export async function POST(req: Request) {
     return handleError(error);
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
+
+    const paginationResult = await questionService.getQuestions(page, limit);
+
+    return NextResponse.json(
+      ApiResponse.success(paginationResult, 'Questions fetched successfully')
+    );
+  } catch (error) {
+    return handleError(error);
+  }
+}
