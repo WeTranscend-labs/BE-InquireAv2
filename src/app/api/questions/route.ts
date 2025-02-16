@@ -10,7 +10,7 @@ const questionService = new QuestionService(new QuestionRepository());
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const data = createQuestionSchema.parse(body); // Validate dữ liệu từ frontend
+    const data = createQuestionSchema.parse(body);
 
     const question = await questionService.createQuestion(data);
 
