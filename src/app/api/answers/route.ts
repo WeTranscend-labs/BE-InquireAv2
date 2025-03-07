@@ -1,34 +1,24 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { createAnswerSchema } from '@/module/answer/answer.schema';
+import { AnswerRepository } from '@/module/answer/answer.repository';
+import { AnswerService } from '@/module/answer/answer.service';
+import { handleError } from '@/exception/GlobalExceptionHandler';
+import { ApiResponse } from '@/common/ApiResponse';
 
-const prisma = new PrismaClient();
+const answerService = new AnswerService(new AnswerRepository());
 
 export async function POST(req: Request) {
   try {
-    const { questionId, questionText, questionContent, category } =
-      await req.json();
+    const body = await req.json();
+    const data = createAnswerSchema.parse(body);
 
-    if (!questionId || !questionText || !questionContent || !category) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // Tạo câu hỏi trong MongoDB
-    const question = await prisma.question.create({
-      data: { questionId, questionText, questionContent, category },
-    });
+    const answer = await answerService.createAnswer(data);
 
     return NextResponse.json(
-      { message: 'Question created', question },
+      ApiResponse.success(answer, 'Answer created successfully'),
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error saving question:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return handleError(error);
   }
 }
