@@ -16,13 +16,9 @@ model Question {
   questionContent String    // Chi tiết câu hỏi
   category        String    // Danh mục
 
-  answers         Answer[]  @relation("QuestionToAnswer") // Quan hệ với Answer
 }
 
 model Answer {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId // ID từ MongoDB, gửi lên chain làm answerDetailId
   answerText  String    // Nội dung câu trả lời
-
-  questionId  String    @db.ObjectId // Tham chiếu đến Question._id
-  question    Question  @relation("QuestionToAnswer", fields: [questionId], references: [id]) // Quan hệ với Question
 }
