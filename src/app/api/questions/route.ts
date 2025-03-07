@@ -31,6 +31,8 @@ export async function GET(req: Request) {
 
     const paginationResult = await questionService.getQuestions(page, limit);
 
+    console.log(111111111111);
+
     return NextResponse.json(
       ApiResponse.success(paginationResult, 'Questions fetched successfully')
     );

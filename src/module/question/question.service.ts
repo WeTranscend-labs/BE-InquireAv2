@@ -8,24 +8,17 @@ export class QuestionService {
   constructor(private questionRepository: QuestionRepository) {}
 
   async createQuestion(data: {
-    questionId: number;
     questionText: string;
     questionContent: string;
     category: string;
   }) {
-    const existingQuestion = await this.questionRepository.findByQuestionId(
-      data.questionId
-    );
-    if (existingQuestion)
-      throw new AppException(ERROR_CODES.QUESTION_ALREADY_EXISTS);
-
+    // Không cần kiểm tra existingQuestion dựa trên questionId nữa
     const question = Question.create(
-      data.questionId,
       data.questionText,
       data.questionContent,
       data.category
     );
-    return this.questionRepository.create(question);
+    return this.questionRepository.create(question); // Trả về question với _id từ MongoDB
   }
 
   async getQuestions(page: number = 1, limit: number = 10) {
@@ -43,10 +36,12 @@ export class QuestionService {
       .build();
   }
 
-  async getQuestionById(questionId: number) {
-    if (isNaN(questionId))
+  async getQuestionById(id: string) {
+    // Đổi questionId thành id kiểu string
+    if (!id || typeof id !== 'string')
+      // Kiểm tra id hợp lệ
       throw new AppException(ERROR_CODES.INVALID_QUESTION_ID);
-    const question = await this.questionRepository.findByQuestionId(questionId);
+    const question = await this.questionRepository.findById(id); // Đổi findByQuestionId thành findById
     if (!question) throw new AppException(ERROR_CODES.QUESTION_NOT_FOUND);
     return question;
   }
