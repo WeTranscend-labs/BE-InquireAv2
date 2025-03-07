@@ -12,7 +12,7 @@ export async function GET(req: Request, { params }: { params: Params }) {
   try {
     const raw = await params;
 
-    const questionId = parseInt(raw.questionId, 10);
+    const questionId = raw.questionId ?? 10;
 
     const question = await questionService.getQuestionById(questionId);
 

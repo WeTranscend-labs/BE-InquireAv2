@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,23 +11,18 @@ datasource db {
 }
 
 model Question {
-  id              String   @id @db.ObjectId @default(auto()) @map("_id") 
-  questionId      Int   @unique
-  questionText    String
-  questionContent String
-  category        String
-  createdAt       DateTime @default(now())
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId // ID từ MongoDB, gửi lên chain làm questionDetailId
+  questionText    String    // Nội dung câu hỏi
+  questionContent String    // Chi tiết câu hỏi
+  category        String    // Danh mục
 
-  answers         Answer[] @relation("QuestionToAnswer")
+  answers         Answer[]  @relation("QuestionToAnswer") // Quan hệ với Answer
 }
 
 model Answer {
-  id        String   @id @db.ObjectId @default(auto()) @map("_id") 
-  answerId  String   @unique
-  answerText String
-  createdAt DateTime @default(now())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId // ID từ MongoDB, gửi lên chain làm answerDetailId
+  answerText  String    // Nội dung câu trả lời
 
-  questionId Int
-  question   Question @relation("QuestionToAnswer", fields: [questionId], references: [questionId])
+  questionId  String    @db.ObjectId // Tham chiếu đến Question._id
+  question    Question  @relation("QuestionToAnswer", fields: [questionId], references: [id]) // Quan hệ với Question
 }
-

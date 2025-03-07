@@ -1,28 +1,32 @@
 import { PrismaClient } from '@prisma/client';
+import { Question } from './question.entity';
 const prisma = new PrismaClient();
 
 export class QuestionRepository {
-  async findByQuestionId(questionId: number) {
-    return await prisma.question.findFirst({
-      where: {
-        questionId: questionId,
+  constructor() {}
+
+  async create(question: Question) {
+    return prisma.question.create({
+      data: {
+        questionText: question.questionText,
+        questionContent: question.questionContent,
+        category: question.category,
       },
     });
-  }
-
-  async create(question: any) {
-    return prisma.question.create({ data: question });
   }
 
   async findAll(offset: number, limit: number) {
     const questions = await prisma.question.findMany({
       skip: offset,
       take: limit,
-      orderBy: { createdAt: 'desc' },
     });
-
     const total = await prisma.question.count();
-
     return { questions, total };
+  }
+
+  async findById(id: string) {
+    return prisma.question.findUnique({
+      where: { id },
+    });
   }
 }
